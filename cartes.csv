@@ -1,0 +1,5 @@
+Type,Nom,PV,DescriptionAttaque,Attaque,Retraite,Description,ASCII
+Monstre,Electhor,120,Coup de foudre,30,2,,"   __\n  (o)>\n  /|\\n  |"
+Monstre,Dracaufeu,150,Lance flamme,50,3,,"    |\___/|   \n   ( o   o )  \n    \_^_^_/  "
+Objet,Sandwich du kiosk,,,,,Restaure 20 PV.," _______\n/______/"
+Dresseur,Monsieur Baste,,,,,Piochez deux cartes.,"\n   O  \n  /|\\n  / \"
