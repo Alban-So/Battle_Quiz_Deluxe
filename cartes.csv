@@ -1,4 +1,4 @@
-idCarteType,Nom,PV,DescriptionAttaque,Attaque,Retraite,Description,ASCII
+idCarte,Type,Nom,PV,DescriptionAttaque,Attaque,Retraite,Description,ASCII
 0,Monstre,Electhor,120,Coup de foudre,30,2,,"   __\n  (o)>\n  /|\\n  |"
 1,Monstre,Dracaufeu,150,Lance flamme,50,3,,"    |\___/|   \n   ( o   o )  \n    \_^_^_/  "
 2,Monstre,Pikachu,60,Éclair,20,1,,"  (\n   )\n c[]  "
