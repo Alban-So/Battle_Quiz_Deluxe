@@ -1,0 +1,8 @@
+|---------------------------------------------------------------------------------------------------|
+|                1 - Nouvelle partie en solo                                                        |
+|                2 - Nouvelle partie en duo                                                         |
+|                3 - Charger une partie pré-existante                                               |
+|                4 - Afficher les règles du jeux                                                    |
+|                5 - Lancer un tutoriel                                                             |
+|                6 - Voir les decks disponibles                                                     |
+|                7 - Crédits du jeu                                                                 |
