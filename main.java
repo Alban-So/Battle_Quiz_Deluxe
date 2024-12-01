@@ -161,10 +161,6 @@ class main extends Program {
         afficherDetailsCarte(fichierCSV, 1, electhor);
 
         afficherPokedex(fichierCSV);
-
-        println("Affichage des cartes :");
-
-        //afficherPokedex(fichierCSV); // Affichage du 1er pokemon de la liste du fichier CSV
         
     }
 
