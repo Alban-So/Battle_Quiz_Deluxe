@@ -6,46 +6,80 @@ class main extends Program {
     // déroule le jeux
     void déroulementJeux(){
         
-        char choixJoueur = menuJeux();
+        File BorduresJeux = newFile("Texts/BorduresJeux.txt");
+        cursor(0, 0);
+        afficherFichierTxt(BorduresJeux); // Affichage des bordures du jeux
 
-        switch (choixJoueur){
+        CSVFile partieSélectionnée = null;
+        int nbrJoueur = -1;
+        boolean finJeu = false; // test
 
-            case '1': // Lancement d'une partie solo
-                CSVFile partieVide = loadCSV("fichiersCSV/partieVide.csv");
-                partieSolo(partieVide);
-                break;
+        do{ // Tant que le joueur ne quitte pas le jeu, il reste dans le menu // test de la boucle while
+            String choixJoueur = menuJeux();
 
-            case '2': // Lancement d'une partie de deux joueurs
-                print("choix2");
-                break;
-            default:
-                print("Erreur");
-        }
+            switch (choixJoueur){
+
+                case "1": // Choix d'une partie solo
+                    partieSélectionnée = loadCSV("fichiersCSV/partieVide.csv");
+                    nbrJoueur = 1;
+                    break;
+
+                case "2": // Choix d'une partie de deux joueurs
+                    partieSélectionnée = loadCSV("fichiersCSV/partieVide.csv");
+                    nbrJoueur = 2;
+                    break;
+                case "8": // Choix de fin du jeu
+                    finJeu = true;
+                    break;
+                default:
+                    print("\n| Erreur");
+            }
+            if (equals(choixJoueur,"1") || equals(choixJoueur,"2")) partieEnCours(partieSélectionnée); // On lance la partie
+        }while(!finJeu);
+        
+        println("\n| Merci d'avoir joué !");
     }
 
     // Fonction qui gère le menu du jeux
-    char menuJeux(){
+    String menuJeux(){
 
 	    File TxtBattleQuiz = newFile("Texts/BattleQuizDeluxe.txt"); //Stockage du contenu des fichiers texte dans une variable
         File TxtAccueil = newFile("Texts/accueil.txt");
         File TxtBarre = newFile("Texts/barre.txt");
 
-        afficherFichierTxt(TxtBattleQuiz);
+        cursor(0, 0);
+        afficherFichierTxt(TxtBattleQuiz); // Affichage du menu du jeux
         afficherFichierTxt(TxtAccueil);
         afficherFichierTxt(TxtBarre);
 
-        char choixUtilisateur = 0;
+        String choixUtilisateur = "";
 
-        do{ // L'utilisateur choisi un numéro entre 1 et 7 (inclus)
-            print("Entrez un numéro entre 1 et 7 pour valider :");
-            choixUtilisateur = readChar();
-            if(choixUtilisateur < '1' || choixUtilisateur > '7') println("Numéro incorrect, veuillez réessayer.");
-        } while(choixUtilisateur < '1' || choixUtilisateur > '7');
+        do{ // L'utilisateur choisi un numéro entre 1 et 8 (inclus)
+            cursor(20, 2);
+            print("Entrez un numéro entre 1 et 8 pour valider :");
+            choixUtilisateur = readString();
+            if(charAt(choixUtilisateur, 0) < '1' || charAt(choixUtilisateur, 0) > '8' || length(choixUtilisateur) == 0 || length(choixUtilisateur) > 1) { 
+                cursor(20, 45);
+                print("                                                                                                                               ");
+                cursor(21, 2);
+                print("Numéro incorrect, veuillez réessayer.");
+            }
+        } while(charAt(choixUtilisateur, 0) < '1' || charAt(choixUtilisateur, 0) > '8' || length(choixUtilisateur) == 0 || length(choixUtilisateur) > 1);
         return choixUtilisateur;
     }
 
-    void partieSolo(CSVFile fichierSauvegarde){
-        print("test");
+    // Fonction qui gère la partie
+    void partieEnCours(CSVFile fichierSauvegarde){
+        
+        int numTour = (int) charAt(getCell(fichierSauvegarde, 1, 6), 0)-48; // Cherche le nombre de tours actuel
+        int joueurQuiCommence = -1;
+        
+        if(numTour == 0){                                     // Si on est au tour 0, c'est une nouvelle partie
+            joueurQuiCommence = tirageAleatoire();            // Détermine aléatoirement qui commencera la partie
+            println(joueurQuiCommence);
+            afficherPiece(joueurQuiCommence);                 // On affiche le côté de la pièce du gagnant (Face : joueur1 ; Pile : joueur2)
+
+        }
     }
 
     // Fonction permettant de contenir le dessin ASCII de la carte passée en paramètre
@@ -60,8 +94,53 @@ class main extends Program {
             return asciiCarte; // Afficher l'ASCII
     }
 
+    // Fonction qui tire un nombre aléatoire entre 1 et 2
+    int tirageAleatoire(){
+        int nbrAleatoire = (int) (random()*2 + 1);
+        return nbrAleatoire; // Renvoie un numéro entre 1 ou 2
+    }
+
+    // Fonction qui gère l'affichage de la pièce (Pile ou Face)
+    void afficherPiece(int tirage){
+
+        File cotéGagnant = null;
+        File piecePlat0 = newFile("Texts/Pieces/pieceEuroPlat0.txt");
+        File piecePlat1 = newFile("Texts/Pieces/pieceEuroPlat1.txt");
+        File piecePlat2 = newFile("Texts/Pieces/pieceEuroPlat2.txt");
+        
+        cursor(19, 0);
+        afficherFichierTxt(piecePlat1);
+        pause(500);
+        cursor(19, 0);
+        afficherFichierTxt(piecePlat0);
+        pause(500);
+        cursor(19, 0);
+        afficherFichierTxt(piecePlat2);
+        pause(500);
+        cursor(19, 0);
+
+        if(tirage == 1){ // Si on a tiré face
+            cotéGagnant = newFile("Texts/Pieces/pieceFace.txt");
+        }
+        else{            // Si on a tiré pile
+            cotéGagnant = newFile("Texts/Pieces/piecePile.txt");
+        }
+        afficherFichierTxt(cotéGagnant);
+    }
+
+    void pause(int milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+    
+
+    // #region ----------------- Fonctions d'affichage ----------------------------------
+
     // Fonction permettant d'afficher toutes les données d'une carte sous un format structuré avec l'ASCII
-    void afficherDetailsCarte(CSVFile fichierCSV, int indiceCarte, String[] dessinCarte) {
+    void afficherDetailsCarte(CSVFile fichierCSV, int indiceCarte) {
 
         // Récupère les différentes informations de la carte
         String typeCarte = getCell(fichierCSV, indiceCarte, 1);           // Colonne Type
@@ -71,9 +150,7 @@ class main extends Program {
         String attaqueCarte = getCell(fichierCSV, indiceCarte, 5);        // Colonne Attaque
         String retraiteCarte = getCell(fichierCSV, indiceCarte, 6);       // Colonne Retraite
         String descriptionCarte = getCell(fichierCSV, indiceCarte, 7);    // Colonne Description
-        String asciiCarte = "";
-        if(length(dessinCarte) > 0) asciiCarte = dessinCouleur(dessinCarte);          // Dessin de la carte
-        else asciiCarte = imageASCIICarte(fichierCSV, indiceCarte);
+        String asciiCarte = imageASCIICarte(fichierCSV, indiceCarte);
 
         String carteAffichee = "";
 
@@ -121,11 +198,11 @@ class main extends Program {
     // Fonction pour afficher toutes les cartes
     void afficherPokedex(CSVFile fichierCSV){
         int nbLignes = rowCount(fichierCSV); // Compte le nombre de lignes dans le fichier
-        String[] dessin = new String[] {};
         for(int i=0; i<nbLignes-1; i++){
-            afficherDetailsCarte(fichierCSV, i+1, dessin);
+            afficherDetailsCarte(fichierCSV, i+1);
         }
     }
+    // #endregion
 
     void algorithm() {
 
@@ -133,61 +210,12 @@ class main extends Program {
 
         int nbLignes = rowCount(fichierCSV); // Compte le nombre de lignes dans le fichier
 
-        //déroulementJeux();
-
-        String[] electhor = {
-            "bnnnbbnnbbbbbbbbbbbbbbbbbbbbb",
-            "bnoonnnonnbbbbbbbnnbbbbbbbbbb",
-            "bbnoonnngnnbbbbnnjnbnnbbbbbbb",
-            "bbbnongnngnbbbnjnjnnjnbbbbbbb",
-            "bnnnnnnggggnbbnjjjjjjjnbbbbbb",
-            "njjjngngggnnnbnjjjjjnnnbbbbbb",
-            "bnnjjngggnjngnnnjjjjjnbbbbbbb",
-            "bbbnnjngnjjnnjjnjjjjnnbbbbbbb",
-            "bbbbbnnnjjnjjjnjjnnnbbbbbbbbb",
-            "bbbbbbnjjjjjjnnnnggnnnnnnbbbb",
-            "bbbbbnjjjjgnjjjjngggggggnbbbb",
-            "bbbbbnnjjgbnjjnngggggnnnnnbbb",
-            "bbbbbbnnjnbjjjjnnggnngnjjjnnb",
-            "bbbbbnoonjjjjjnjnngnjngnjjjjn",
-            "bbbbnooonjjjjjnnjjnnjjnnjnnnn",
-            "bbbnoonnbnjnnnbbnjjjnnjjjnbbb",
-            "bbnonnbbbbnnbbbbbnnjjnnjjjnbb",
-            "bbnnbbbbbbbbbbbbbbbnjnbnnjjnb",
-            "bbbbbbbbbbbbbbbbbbbbnnbbbnnnb",
-        };
+        déroulementJeux();
 
         //print(dessinCouleur(electhor));
-        afficherDetailsCarte(fichierCSV, 1, electhor);
+        //afficherDetailsCarte(fichierCSV, 1);
 
-        afficherPokedex(fichierCSV);
+        //afficherPokedex(fichierCSV);
         
-    }
-
-    // Fonction qui génère le pixel art du dessin passé en paramètre
-    String dessinCouleur(String[] dessinCouleur) {
-        
-        String reset = "\033[0m"; // Couleur par défaut
-        String[] colors = {"\033[31m", "\033[38;5;214m", "\033[33m", "\033[32m", "\033[34m", "\033[35m", "\033[90m", "\033[30m", "\033[97m"}; // Couleurs rouge, orange, jeune, vert, Bleu, Violet, gris, noir, blanc
-        String dessinFinal = "";
-
-        for (int i = 0; i < length(dessinCouleur); i++) { // Affichage du pixel art avec des couleurs
-            for (int j = 0; j < length(dessinCouleur[0]); j++) {
-                char pixel = charAt(dessinCouleur[i], j); // Récupère le caractère actuel
-                String color = reset;                     // Couleur par défaut (rouge en cas d'erreur)
-                if (pixel == 'b') color = colors[8];      // Blanc
-                else if (pixel == 'r') color = colors[0]; // Rouge
-                else if (pixel == 'o') color = colors[1]; // Orange
-                else if (pixel == 'j') color = colors[2]; // Jaune
-                else if (pixel == 'v') color = colors[3]; // Vert
-                else if (pixel == 'B') color = colors[4]; // Bleu
-                else if (pixel == 'V') color = colors[5]; // Violet
-                else if (pixel == 'g') color = colors[6]; // Gris
-                else if (pixel == 'n') color = colors[7]; // Noir
-                dessinFinal += color + "██" + reset;
-            }
-            dessinFinal += "\n";
-        }
-        return dessinFinal; // Retour du pixel art terminé
     }
 }
