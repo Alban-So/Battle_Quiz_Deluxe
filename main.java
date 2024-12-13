@@ -81,8 +81,10 @@ class main extends Program {
         int[] deckJoueur2 = new int[TAILLE_DECK];
         int nbrCartesDeckJoueur1 = 0;              // Stocke le nombre de cartes dans le deck de chaque joueur
         int nbrCartesDeckJoueur2 = 0;
-        Carte[] mainJoueur1 = new Carte[6];      // Max de 6 cartes dans la main du joueur
-        Carte[] mainJoueur2 = new Carte[6];
+        Carte[] mainJoueur1 = new Carte[4];      // Max de 4 cartes dans la main du joueur
+        Carte[] mainJoueur2 = new Carte[4];
+        Carte[] actifJoueur1 = new Carte[3];     // Max de 3 cartes en partie (1 actif et 2 sur le banc)
+        Carte[] actifJoueur2 = new Carte[3];
         
         //#region Mise en place de l'affichage du début de partie
         File BorduresJeux = newFile("Texts/BorduresJeux.txt");
@@ -108,12 +110,16 @@ class main extends Program {
             nbrCartesDeckJoueur1 = 20;
             deckJoueur2 = declarationDeck(fichierSauvegarde, 2); // Initialisation du deck du joueur 2
             nbrCartesDeckJoueur2 = 20;
-            ajoutCarteDansMain(mainJoueur1, deckJoueur1, nbrCartesDeckJoueur1, historiqueJeux);  // ajout de 3 cartes aléatoire dans la main de chaque joueur
+            for (int carteEnMain=0; carteEnMain<3; carteEnMain++){
+                ajoutCarteDansMain(mainJoueur1, deckJoueur1, nbrCartesDeckJoueur1, historiqueJeux);  // Ajout de 3 cartes aléatoire dans la main de chaque joueur
+                ajoutCarteDansMain(mainJoueur2, deckJoueur2, nbrCartesDeckJoueur2, historiqueJeux);
+            }
             nbrCartesDeckJoueur1 = 17;
-            ajoutCarteDansMain(mainJoueur2, deckJoueur2, nbrCartesDeckJoueur1, historiqueJeux);
             nbrCartesDeckJoueur2 = 17;
-            afficherDetailsCarte(mainJoueur1[0]);
-            //afficherMain(Joueur1);
+            if (joueurQuiCommence == 1) afficherMain(mainJoueur1); // Affichage de la main du joueur qui commence
+            else afficherMain(mainJoueur2);
+            afficherHistoriquePartie(historiqueJeux, "C'est au joueur n°" + joueurQuiCommence + " de placer ses cartes."); 
+            
 
             delay(5000);
         }
@@ -123,13 +129,42 @@ class main extends Program {
         }
     }
 
+    void placerCarte(Carte[] mainJoueur, Carte[] actif){
+
+        boolean saisie = false;
+
+        do{
+
+        }while(saisie);
+    }
+
+    void afficherMain(Carte[] mainJoueur){
+
+        boolean finMain = false; // Vrai si toutes les cartes ont été affichées
+        int indiceCarte = 0, lig = 11, col = 103, lig2 = 0, col2 = 0;
+
+        do{
+            if (indiceCarte == 6) return; // Si les 6 cartes ont étés affichées, on quitte la fonction
+            if (mainJoueur[indiceCarte] == null) finMain = true; // Si il n'y a plus de carte à afficher, on quitte la fonction
+            else {
+                afficherDetailsCarte(mainJoueur[indiceCarte], lig+lig2, col+col2);
+                if (col2 == 0) col2 = 28; // Rajoiute un espacement de 14 caractère pour afficher la prochaine carte
+                else {                    // Sinon, on rajoute l'espacement sur les colonnes
+                    col2 = 0;
+                    lig2 += 14;
+                }
+            }
+            indiceCarte++;
+        }while(!finMain);
+    }
+
     // Rajoute une carte aléatoire (provenant du deck du joueur) dans la main du joueur
-    void ajoutCarteDansMain(Carte[] mainJoueur, int[] deckJoueur, int nbrCartesDeckJoueur1, String[] historique){
+    void ajoutCarteDansMain(Carte[] mainJoueur, int[] deckJoueur, int nbrCartesDeckJoueur, String[] historique){
 
         if (mainJoueur[length(mainJoueur)-1] == null){ // Si il y a de la place dans la main du joueur on ajoute une carte du deck à sa main.
             for (int i=0; i<length(mainJoueur); i++){
                 if (mainJoueur[i] == null) {
-                    int cartePiocheeAleatoire = (int) (random()*nbrCartesDeckJoueur1 + 1); // On prend l'indice d'une des cartes au hasard dans le deck
+                    int cartePiocheeAleatoire = (int) (random()*nbrCartesDeckJoueur); // On prend l'indice d'une des cartes au hasard dans le deck
                     int numCarte = deckJoueur[cartePiocheeAleatoire];
                     mainJoueur[i] = definitCarte(numCarte);// On ajoute la carte dans la main du joueur
                     deckJoueur[cartePiocheeAleatoire] = 0; // On enlève la carte du deck
@@ -149,7 +184,7 @@ class main extends Program {
         for (int i=0; i<length(deckJoueur)-1; i++){     // On parcours le deck du joueur
             if(deckJoueur[i] == 0 || carteVideTrouvee){ // Dès que l'on trouve la carte jouée,
                 deckJoueur[i] = deckJoueur[i+1];        // On décale toutes les cartes suivantes d'un indice
-            }
+            } // A faire verifier
         }
     }
 
@@ -165,7 +200,7 @@ class main extends Program {
         nouvelleCarte.nom = getCell(listeCartes, indiceCarte, 2);                      // Colonne Nom
         nouvelleCarte.description = getCell(listeCartes, indiceCarte, 7);              // Colonne Description
         nouvelleCarte.ASCII = imageASCIICarte(listeCartes, indiceCarte);               // Colonne ASCII
-        if (equals(nouvelleCarte.nom, "Monstre")){ // Si c'est un monstre, on lui rajoute ces caractéristiques.
+        if (equals(nouvelleCarte.type, "Monstre")){ // Si c'est un monstre, on lui rajoute ces caractéristiques.
             nouvelleCarte.PV = stringToInt(getCell(listeCartes, indiceCarte, 3));      // Colonne PV
             nouvelleCarte.description = getCell(listeCartes, indiceCarte, 4);          // Colonne DescriptionAttaque
             nouvelleCarte.attaque = stringToInt(getCell(listeCartes, indiceCarte, 5)); // Colonne Attaque
@@ -219,67 +254,111 @@ class main extends Program {
     // #region ----------------- Fonctions d'affichage ----------------------------------
 
     // Fonction permettant d'afficher toutes les données d'une carte sous un format structuré en ASCII
-    void afficherDetailsCarte(Carte infosCarte) {
+    void afficherDetailsCarte(Carte infosCarte, int lig, int col) {
 
-        String carteAffichee = "";
         String PV_Carte = Integer.toString(infosCarte.PV); // Fonction int to String A faire
         String attaque_Carte = Integer.toString(infosCarte.attaque);
         String retraite_Carte = Integer.toString(infosCarte.retraite);
         
-        carteAffichee += "___________________________\n";                 // Ajoute le nom
-        carteAffichee += "|  " + infosCarte.nom; 
-        for (int i = length(infosCarte.nom); i<18; i++) carteAffichee += " ";
-        if(equals(infosCarte.type, "Monstre")){                                 // Ajout des PVs pour les monstres
-            if (length(PV_Carte) < 3) carteAffichee += " ";
-            carteAffichee += PV_Carte + "PV";
-        }
-        else carteAffichee += "     ";
-        carteAffichee +="|\n";
-        
-        String[] asciiLignes = infosCarte.ASCII.split("\n");               // A chaque passage à la ligne (\n), on passe a l'indice suivant du tableau
+        int ligIndice = 1;
+        cursor(lig, col);
+        print("___________________________"); 
+        cursor(lig+ligIndice,col);                
+        print("|  " + infosCarte.nom);        // Ajoute le nom
 
-        int hauteurAscii = length(asciiLignes);
+        for (int i = length(infosCarte.nom); i<18; i++) print(" ");
+        if(equals(infosCarte.type, "Monstre")){                                 // Ajout des PVs pour les monstres
+            if (length(PV_Carte) < 3) print(" ");
+            print(PV_Carte + "PV");
+        }
+        else print("     ");
+        print("|");
+        ligIndice++;
+        cursor(lig+ligIndice,col);
+
+        int hauteurAscii = 0;
+        for (int i=0; i<length(infosCarte.ASCII); i++){
+            if (charAt(infosCarte.ASCII, i) == '\n') hauteurAscii++;
+        }
         
         for (int i = 0; i < 5 - hauteurAscii; i++) {                       // Ajoute de l'espacement vide si nécessaire (si le dessin est trop petit)
-            carteAffichee+="|                         |\n";
+            print("|                         |");
+            ligIndice++;
+            cursor(lig+ligIndice,col);
         }
         
-        for (int i = 0; i < hauteurAscii; i++) {                           // Ajoute le dessin ASCII
-            while (length(asciiLignes[i]) < 20) asciiLignes[i] += " ";     // Ajoute des espaces à droite du dessin, puis rajoute le "|" de fin de ligne
-            carteAffichee += "|     " + asciiLignes[i] + "|\n";
+        int colIndice = 0;
+        for (int i = 0; i < length(infosCarte.ASCII); i++) {               // Ajoute le dessin ASCII
+            if (colIndice == 0) print("|     ");                // Ajoute le début de la ligne de la carte
+            if (charAt(infosCarte.ASCII, i) == '\n' || i == length(infosCarte.ASCII)-1){
+                while (colIndice < 20){                         // Ajoute des espaces à droite du dessin,
+                    print(" ");
+                    colIndice++;
+                }
+                print("|");                                     // Puis rajoute le "|" de fin de ligne
+                ligIndice++;
+                colIndice = 0;
+                cursor(lig+ligIndice,col);
+            }
+            else{
+                print(charAt(infosCarte.ASCII, i));
+                colIndice++;
+            }
         }
 
-        carteAffichee += "|_________________________|\n";
-        carteAffichee += "|                         |\n";
+        print("|_________________________|");
+        ligIndice++;
+        cursor(lig+ligIndice,col);
+        print("|                         |");
+        ligIndice++;
+        cursor(lig+ligIndice,col);
         
         if(equals(infosCarte.type,"Monstre")){                                   // Description de la carte pour les Monstres
-            carteAffichee += "|  - " + attaque_Carte + " : " + attaque_Carte;
-            for (int i = length(attaque_Carte) + length(attaque_Carte); i<18; i++) carteAffichee += " ";
-            carteAffichee += "|\n";
-            carteAffichee += "|                         |\n";
-            carteAffichee += "| Points de retraite : " + retraite_Carte + "  |\n"; // Ajoute les points de retraite
+            print("|  - " + attaque_Carte + " : " + infosCarte.description);
+            for (int i = length(attaque_Carte) + length(infosCarte.description); i<18; i++) print(" ");
+            print("|");
+            ligIndice++;
+            cursor(lig+ligIndice,col);
+            print("|                         |");
+            ligIndice++;
+            cursor(lig+ligIndice,col);
+            print("| Points de retraite : " + retraite_Carte + "  |"); // Ajoute les points de retraite
+            ligIndice++;
+            cursor(lig+ligIndice,col);
         }
         else{                                                              // Description de la carte pour les autres types de cartes
-            carteAffichee += "|  - ";
+            print("|  - ");
             if (length(infosCarte.description) > 21){                            // Si la description de la carte est trop grande,
                 int tailleEspaceRestant = 42 - length(infosCarte.description);   // on l'affiche sur deux lignes.
                 for (int i=0; i<42; i++) {
-                    if (i < length(infosCarte.description)) carteAffichee += charAt(infosCarte.description, i);
-                    else carteAffichee += " ";
-                    if (i == 20) carteAffichee += "|\n|    ";
+                    if (i < length(infosCarte.description)) print(charAt(infosCarte.description, i));
+                    else print(" ");
+                    if (i == 20) {
+                        print("|");
+                        ligIndice++;
+                        cursor(lig+ligIndice,col);
+                        print("|    ");
+                    }
                 }
-                carteAffichee += "|\n";
+                print("|");
+                ligIndice++;
+                cursor(lig+ligIndice,col);
             }
             else {
-                carteAffichee += infosCarte.description;
-                for (int i = length(infosCarte.description); i<21; i++) carteAffichee += " ";
-                carteAffichee += "|\n" + "|                         |\n";
+                print(infosCarte.description);
+                for (int i = length(infosCarte.description); i<21; i++) print(" ");
+                print("|");
+                ligIndice++;
+                cursor(lig+ligIndice,col);
+                print("|                         |");
+                ligIndice++;
+                cursor(lig+ligIndice,col);
             } 
-            carteAffichee += "|                         |\n";
+            print("|                         |");
+            ligIndice++;
+            cursor(lig+ligIndice,col);
         }
-        carteAffichee += "---------------------------\n";
-
-        print(carteAffichee); // Affichage de la carte
+        print("---------------------------"); // Fin de l'affichage de la carte
     }
 
      // Fonction pour afficher toutes les cartes
@@ -301,11 +380,11 @@ class main extends Program {
         };
 
         for (int i=0; i<3; i++){
-            cursor(10, 0);
+            cursor(10, 103);
             afficherFichierTxt(fichiersPieces[i]);
             delay(500);
         }
-        cursor(10, 0);
+        cursor(10, 103);
 
         if(tirage == 1){ // Si on a tiré face
             cotéGagnant = newFile("Texts/Pieces/pieceFace.txt");
