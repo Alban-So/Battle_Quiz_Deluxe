@@ -1,9 +1,0 @@
-|                                                 |
-|     ██████╗  ██████╗███╗   ███╗                 | **BARRE DE NAVIGATION**
-|    ██╔═══██╗██╔════╝████╗ ████║                 | (1) attaquer
-|    ██║   ██║██║     ██╔████╔██║                 | (2) battre en retraite
-|    ██║▄▄ ██║██║     ██║╚██╔╝██║                 | (3) passer le tour
-|    ╚██████╔╝╚██████╗██║ ╚═╝ ██║                 | (4) < ou > pour sélectionner une carte
-|     ╚══▀▀═╝  ╚═════╝╚═╝     ╚═╝                 | (5) switch la sélection entre la main et le banc|
-|                                                 |
-|-------------------------------------------------|
