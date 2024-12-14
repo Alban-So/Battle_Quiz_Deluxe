@@ -1,4 +1,4 @@
-<Mettre ici le nom de votre jeu>
+Battle Quiz Deluxe
 ===========
 
 Développé par Sonneville Alban Roty Clément
