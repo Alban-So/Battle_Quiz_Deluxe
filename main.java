@@ -100,7 +100,7 @@ class main extends Program {
         int[] deckJoueur1 = new int[TAILLE_DECK];  // Déclaration des decks avec kes id des cartes
         int[] deckJoueur2 = new int[TAILLE_DECK];
         Carte[] plateauJoueur1= new Carte[3];
-        Carte[] plateauJoueur2= new Carte[3];              // Création du plateau de jeu 
+        Carte[] plateauJoueur2= new Carte[3];       // Création du plateau de jeu 
         int nbrCartesDeckJoueur1 = 0;              // Stocke le nombre de cartes dans le deck de chaque joueur
         int nbrCartesDeckJoueur2 = 0;
         Carte[] mainJoueur1 = new Carte[6];      // Max de 6 cartes dans la main du joueur
@@ -112,7 +112,7 @@ class main extends Program {
         Joueur joueurQuiJoue;
         Carte[] mainJoueurQuiJoue;
         int[] deckJoueurQuiJoue;
-        int[] plateauJoueurQuiJoue;
+        Carte[] plateauJoueurQuiJoue;
 
         //---------------------------INITIALISATION DE LA PARTIE--------------------------------------------------------//
         File BorduresJeux = newFile("Texts/BorduresJeux.txt");
@@ -139,7 +139,8 @@ class main extends Program {
             delay(1500);                                      // pendant 1.5 secondes
             if(joueurQuiCommence==1){
                 pseudoJoueur=j1.pseudo;
-            }else{
+            }
+            else{
                 pseudoJoueur=j2.pseudo;
             }
             viderPlateau();
@@ -166,7 +167,8 @@ class main extends Program {
                         deckJoueurQuiJoue=deckJoueur1;
                         plateauJoueurQuiJoue=plateauJoueur1;
                         
-                    }else{
+                    }
+                    else{
                         joueurQuiJoue=j2;
                         mainJoueurQuiJoue=mainJoueur2;
                         deckJoueurQuiJoue=deckJoueur2;
@@ -175,7 +177,7 @@ class main extends Program {
                     afficherMain(mainJoueurQuiJoue);// Affichage de la main du joueur qui joue
                     afficherHistoriquePartie(historiqueJeux, "C'est le joueur " + joueurQuiJoue.pseudo + " de placer ses cartes.");
                     cursor(2,0);
-                    print(menuMainJoueur); 
+                    print(menuMainJoueur);
                     if(numTour==0 || numTour==1){
                         int choixJoueurInteractionMain=choixJoueurInteractionMain();
                         while(choixJoueurInteractionMain != 7)
@@ -193,7 +195,8 @@ class main extends Program {
                                 //mainJoueurQuiJoue[2]=vide
                         }
                     
-                    }else{
+                    }
+                    else{
                         //affficher le plateau normal
                         // inclure les choix possibles ( voir encadréQuestion.txt)
                         // bouton attaque ou retraite préssé -> QCMpourAttaquer() --> décomenter ce qui suit :
@@ -215,12 +218,11 @@ class main extends Program {
                     }
                 joueurQuiCommence=(joueurQuiCommence+1)%2;
             }
-    
-        }else{
+        else{
             cursor(28,31);
             println("pas encore fait...1 jour peut-etre");
             delay(5000);   
-
+        }
     } 
 
 
@@ -275,12 +277,12 @@ class main extends Program {
     }
 
     // Rajoute une carte aléatoire (provenant du deck du joueur) dans la main du joueur
-    void ajoutCarteDansMain(Carte[] mainJoueur, int[] deckJoueur, int nbrCartesDeckJoueur1, String[] historique){
+    void ajoutCarteDansMain(Carte[] mainJoueur, int[] deckJoueur, int nbrCartesDeckJoueur, String[] historique){
 
         if (mainJoueur[length(mainJoueur)-1] == null){ // Si il y a de la place dans la main du joueur on ajoute une carte du deck à sa main.
             for (int i=0; i<length(mainJoueur); i++){
                 if (mainJoueur[i] == null) {
-                    int cartePiocheeAleatoire = (int) (random()*nbrCartesDeckJoueur1 + 1); // On prend l'indice d'une des cartes au hasard dans le deck
+                    int cartePiocheeAleatoire = (int) (random()*nbrCartesDeckJoueur); // On prend l'indice d'une des cartes au hasard dans le deck
                     int numCarte = deckJoueur[cartePiocheeAleatoire];
                     mainJoueur[i] = definitCarte(numCarte);// On ajoute la carte dans la main du joueur
                     deckJoueur[cartePiocheeAleatoire] = 0; // On enlève la carte du deck
@@ -316,7 +318,7 @@ class main extends Program {
         nouvelleCarte.nom = getCell(listeCartes, indiceCarte, 2);                      // Colonne Nom
         nouvelleCarte.description = getCell(listeCartes, indiceCarte, 7);              // Colonne Description
         nouvelleCarte.ASCII = imageASCIICarte(listeCartes, indiceCarte);               // Colonne ASCII
-        if (equals(nouvelleCarte.nom, "Monstre")){ // Si c'est un monstre, on lui rajoute ces caractéristiques.
+        if (equals(nouvelleCarte.type, "Monstre")){ // Si c'est un monstre, on lui rajoute ces caractéristiques.
             nouvelleCarte.PV = stringToInt(getCell(listeCartes, indiceCarte, 3));      // Colonne PV
             nouvelleCarte.description = getCell(listeCartes, indiceCarte, 4);          // Colonne DescriptionAttaque
             nouvelleCarte.attaque = stringToInt(getCell(listeCartes, indiceCarte, 5)); // Colonne Attaque
@@ -373,7 +375,8 @@ class main extends Program {
             cursor(i,2);
             println("                                                                                                  ");
         }
-    }    
+    }   
+     
     // Fonction permettant d'afficher toutes les données d'une carte sous un format structuré en ASCII
     void afficherDetailsCarte(Carte infosCarte, int lig, int col) {
 
@@ -479,7 +482,7 @@ class main extends Program {
             ligIndice++;
             cursor(lig+ligIndice,col);
         }
-        print("---------------------------");// Fin de l'affichage de la carte
+        print("---------------------------"); // Fin de l'affichage de la carte
     }
 
      // Fonction pour afficher toutes les cartes
@@ -598,17 +601,20 @@ et test si la réponse donné par l'utilisateur est correct ou non */
             else if(choixDifficulté==2)aCharger=ce1;
             else aCharger=ce2;
         
-        }else if(j.classe=="CE2"){
+        }
+        else if(j.classe=="CE2"){
             if(choixDifficulté==1)aCharger=ce1;
             else if(choixDifficulté==2)aCharger=ce2;
             else aCharger=cm1;
             
-        }else if(j.classe=="CM1"){
+        }
+        else if(j.classe=="CM1"){
             if(choixDifficulté==1)aCharger=ce2;
             else if(choixDifficulté==2)aCharger=cm1;
             else aCharger=cm2;
         
-        }else{
+        }
+        else{
             if(choixDifficulté==1)aCharger=cm1;
             else if(choixDifficulté==2)aCharger=cm2;
             else aCharger=sixième;
@@ -697,7 +703,8 @@ et test si la réponse donné par l'utilisateur est correct ou non */
         if (réussirQCM(entréeUtilisateur,aleaLigne,acharger)){
             println("Bravo, bonne réponse !");
             résultatQCM=true;
-        }else{
+        }
+        else{
             println("FAUX !, la bonne réponse était "+getCell(acharger, aleaLigne,5));
         }
         return résultatQCM;
