@@ -224,7 +224,6 @@ class main extends Program {
                 joueurQuiJoue.main=resetMain(joueurQuiJoue.main);
                 viderMain();
                 afficherMain(joueurQuiJoue.main);
-                delay(1000);
                 return true;
             }else{
                 afficherHistoriquePartie(historiqueJeux,"pas possible mdrrr");
@@ -264,21 +263,25 @@ class main extends Program {
     }
     
     // Rajoute une carte aléatoire (provenant du deck du joueur) dans la main du joueur
-    void ajoutCarteDansMain(Carte[] mainJoueur, int[] deckJoueur, int nbrCartesDeckJoueur, String[] historique){    
-            if (mainJoueur[length(mainJoueur)-1] == null){ // Si il y a de la place dans la main du joueur on ajoute une carte du deck à sa main.
-                for (int i=0; i<length(mainJoueur); i++){
-                    if (mainJoueur[i] == null) {
-                        int cartePiocheeAleatoire = (int) (random()*nbrCartesDeckJoueur); // On prend l'indice d'une des cartes au hasard dans le deck
-                        int numCarte = deckJoueur[cartePiocheeAleatoire];
-                        mainJoueur[i] = definitCarte(numCarte);// On ajoute la carte dans la main du joueur
-                        deckJoueur[cartePiocheeAleatoire] = 0; // On enlève la carte du deck
-                        triDeck(deckJoueur);                   // Et on tri le deck (carte vide placée à la fin)
-                        nbrCartesDeckJoueur--;
-                        return;
+    void ajoutCarteDansMain(Carte[] mainJoueur, int[] deckJoueur, int nbrCartesDeckJoueur, String[] historique){
+
+        if (mainJoueur[length(mainJoueur)-1] == null){ // Si il y a de la place dans la main du joueur on ajoute une carte du deck à sa main.
+            for (int i=0; i<length(mainJoueur); i++){
+                if (mainJoueur[i] == null) {
+                    int cartePiocheeAleatoire = (int) (random()*nbrCartesDeckJoueur); // On prend l'indice d'une des cartes au hasard dans le deck
+                    if (deckJoueur[19] != 0) { // Si on a pas encore ajoute de cartes en main, il faut au moins 1 monstre dans la main pour lancer le jeu
+                        while(cartePiocheeAleatoire > 16) cartePiocheeAleatoire = (int) (random()*nbrCartesDeckJoueur);
                     }
+                    int numCarte = deckJoueur[cartePiocheeAleatoire];
+                    mainJoueur[i] = definitCarte(numCarte);// On ajoute la carte dans la main du joueur
+                    deckJoueur[cartePiocheeAleatoire] = 0; // On enlève la carte du deck
+                    triDeck(deckJoueur);                   // Et on tri le deck (carte vide placée à la fin)
+                    nbrCartesDeckJoueur--;
+                    return;
                 }
-            } // Sinon, on indique qu'il n'y a pas de place dans sa main.
-            else afficherHistoriquePartie(historique, "Vous avez atteint le nombre de cartes maximale dans votre main.");
+            }
+        } // Sinon, on indique qu'il n'y a pas de place dans sa main.
+        else afficherHistoriquePartie(historique, "Vous avez atteint le nombre de cartes maximale dans votre main.");
     }
 
     void addCartetoMain(int nombreDeCarteàAjouter, Carte[] mainJoueur, int[] deckJoueur, int nbrCartesDeckJoueur, String[] historique){
@@ -289,11 +292,10 @@ class main extends Program {
     // Tri le deck du joueur (carte déja utilisée placée au fond du deck ayant comme valeur 0)
     void triDeck(int[] deckJoueur){
 
-        boolean carteVideTrouvee = false;
-
-        for (int i=0; i<length(deckJoueur)-1; i++){     // On parcours le deck du joueur
-            if(deckJoueur[i] == 0 || carteVideTrouvee){ // Dès que l'on trouve la carte jouée,
+        for (int i=0; i<TAILLE_DECK-1; i++){            // On parcours le deck du joueur
+            if(deckJoueur[i] == 0){                     // Dès que l'on trouve la carte jouée,
                 deckJoueur[i] = deckJoueur[i+1];        // On décale toutes les cartes suivantes d'un indice
+                deckJoueur[i+1] = 0;
             }
         }
     }
@@ -318,18 +320,33 @@ class main extends Program {
         }
         return nouvelleCarte; // Retourne la carte contenant toute ces informations
     }
+
     // Renvoie le deck du joueur
     int[] declarationDeck(CSVFile fichierSauvegarde, int numJoueur){
 
-        String typeCarte = getCell(fichierSauvegarde, 1, 2);
+        String typeCarte = getCell(fichierSauvegarde, numJoueur, 2);
         int[] deckJoueur = new int[TAILLE_DECK];            // Déclaration d'un deck vide
 
         if (length(typeCarte) != 0){                        // Si il y a un deck dans le fichier de sauvegarde, alors on sélectionne ces cartes là
             
-            // A faire
+            int index = 0;
+            int nombreActuel = 0;
+
+            for(int i=0; i<length(typeCarte); i++){
+
+                char c = charAt(typeCarte, i);
+
+                if (c == '/') {                             // Si il y a un '/', on termine le nombre actuel
+                    deckJoueur[index++] = nombreActuel;
+                    nombreActuel = 0;                       // Réinitialiser pour le prochain nombre
+                } else {
+                    nombreActuel = nombreActuel * 10 + (c - '0');
+                }
+            }
+            deckJoueur[index] = nombreActuel;               // Ajouter la derniere carte du deck
         }
-        else{                                               // Sinon, le deck et vide et on rajoute les cartes normalement
-            int choixDeck = 8*(numJoueur-1);                // Sélectionne le deck 1 pour le joueur 1 et le deck 2 pour le joueur 2 (test)
+        else{                                               // Sinon, le deck est vide et on rajoute les cartes normalement
+            int choixDeck = 8*(numJoueur-1);                // Sélectionne le deck 1 pour le joueur 1 et le deck 2 pour le joueur 2
             for (int i = 0; i<8; i++){
                 deckJoueur[i] += i+choixDeck+1;
                 deckJoueur[i+8] += i+choixDeck+1;
@@ -341,7 +358,6 @@ class main extends Program {
         }
         return deckJoueur;                                  // Retoure le deck du joueur (chaque numéro correspond à un id de carte)
     }
-
     // Fonction permettant de contenir le dessin ASCII de la carte passée en paramètre
     String imageASCIICarte(CSVFile fichierCSV, int indiceCarte){
         
@@ -550,9 +566,12 @@ class main extends Program {
         }
         for(int i=0; i<length(historique); i++){ // Affiche l'historique du jeu
             cursor(i+4, 105);
+            if (i == length(historique)-1) print(ANSI_BLUE);
             print(historique[i]);
+            if (i == length(historique)-1) print(ANSI_RESET);
             for (int j=length(historique[i]); j<68; j++) print(" ");
         }
+        delay(1000);
     }
 
     // Fonction pour afficher le contenu d'un fichier txt
