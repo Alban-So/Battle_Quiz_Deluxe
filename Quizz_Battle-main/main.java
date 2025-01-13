@@ -23,6 +23,7 @@ class main extends Program {
         j.points=0;
         return j;
     }
+
     String toString(Joueur j){
         return "Pseudo : "+j.pseudo;
     }
@@ -100,10 +101,11 @@ class main extends Program {
 
         return newJoueur(pseudo,classe);
     }
+    
     // Fonction qui gère la partie
     void partieEnCours(CSVFile fichierSauvegarde, String typeDePartie){
         //---------------------------INITIALISATION COMMUNE AUX 2 TYPES DE PARTIES--------------------------------------------------------//
-        
+        //#region Déclaration des variables nécessaires pour le bon fonctionnement du jeux
         int numTour = (int) charAt(getCell(fichierSauvegarde, 1, 6), 0)-48; // Cherche le nombre de tours actuel
         int joueurQuiCommence = -1;
         String pseudoJoueur;
@@ -119,6 +121,7 @@ class main extends Program {
         String logoQCMString=TXTtoString(newFile("Texts/EncadréQuestion.txt"));
         String menuMainJoueur=TXTtoString(newFile("Texts/InteractionMain.txt"));
         String stylePlateau=TXTtoString(newFile("Texts/Plateau.txt"));
+        //#endregion
         cursor(0, 0);
         print(BorduresJeux);
         cursor(2,0);
@@ -151,8 +154,8 @@ class main extends Program {
             afficherHistoriquePartie(historiqueJeux, "Chaque joueur pioche 3 cartes.");
             j1.deck = declarationDeck(fichierSauvegarde, 1); // Initialisation du deck du joueur 1
             j2.deck = declarationDeck(fichierSauvegarde, 2); // Initialisation du deck du joueur 2
-            addCartetoMain(3,j1.main, j1.deck, j1.nbCarteRestanteDeck, historiqueJeux);  // Ajout de 3 cartes aléatoire dans la main de chaque joueur
-            addCartetoMain(3,j2.main, j2.deck, j2.nbCarteRestanteDeck, historiqueJeux);
+            j1.nbCarteRestanteDeck = addCartetoMain(3,j1.main, j1.deck, j1.nbCarteRestanteDeck, historiqueJeux);  // Ajout de 3 cartes aléatoire dans la main de chaque joueur
+            j2.nbCarteRestanteDeck = addCartetoMain(3,j2.main, j2.deck, j2.nbCarteRestanteDeck, historiqueJeux);
 
             while(!finDePartie){// Lancement du gameplay, tourne tant que finDePartie est sur false.
                 tourFini=false; // rénitialisation de la variable pour continuer switch en les joueurs.
@@ -170,7 +173,6 @@ class main extends Program {
                     print(menuMainJoueur); 
                     afficherMain(joueurQuiJoue.main);// Affichage de la main du joueur qui joue
                     afficherHistoriquePartie(historiqueJeux, "C'est à " + joueurQuiJoue.pseudo + " de placer ses cartes.");
-                    
                     if(numTour==0 || numTour==1){
                         afficherHistoriquePartie(historiqueJeux,"Placez une carte sur le poste actif");
                         placerCarteFinal(plateauDeCartes,joueurQuiJoue,0,historiqueJeux);
@@ -179,10 +181,10 @@ class main extends Program {
                         placerCarteFinal(plateauDeCartes,joueurQuiJoue,2,historiqueJeux);
                         
                     }else{
-                        //affficher le plateau normal
+                        //afficher le plateau normal
                         // inclure les choix possibles ( voir encadréQuestion.txt)
                         // bouton attaque ou retraite préssé -> QCMpourAttaquer() --> décomenter ce qui suit :
-
+                        delay(2000);
                         //chargementASCII();
                         //actualiserQuestions();
                         //cadreDifficulté(placementQuestion);
@@ -230,6 +232,7 @@ class main extends Program {
                 return false;
             }
     }
+    
     void placerCarteFinal(Carte[][] plateauDeCartes,Joueur joueurQuiJoue,int posteCarte,String[] historiqueJeux){
         int carteChoisi;
         boolean estPlace;
@@ -253,6 +256,7 @@ class main extends Program {
         }
         return newMain; 
     }
+
     int choixJoueur(int max){
         int choixJoueurInteractionMain;
         do{
@@ -263,7 +267,7 @@ class main extends Program {
     }
     
     // Rajoute une carte aléatoire (provenant du deck du joueur) dans la main du joueur
-    void ajoutCarteDansMain(Carte[] mainJoueur, int[] deckJoueur, int nbrCartesDeckJoueur, String[] historique){
+    int ajoutCarteDansMain(Carte[] mainJoueur, int[] deckJoueur, int nbrCartesDeckJoueur, String[] historique){
 
         if (mainJoueur[length(mainJoueur)-1] == null){ // Si il y a de la place dans la main du joueur on ajoute une carte du deck à sa main.
             for (int i=0; i<length(mainJoueur); i++){
@@ -277,18 +281,21 @@ class main extends Program {
                     deckJoueur[cartePiocheeAleatoire] = 0; // On enlève la carte du deck
                     triDeck(deckJoueur);                   // Et on tri le deck (carte vide placée à la fin)
                     nbrCartesDeckJoueur--;
-                    return;
+                    return nbrCartesDeckJoueur;
                 }
             }
         } // Sinon, on indique qu'il n'y a pas de place dans sa main.
         else afficherHistoriquePartie(historique, "Vous avez atteint le nombre de cartes maximale dans votre main.");
+        return nbrCartesDeckJoueur;
     }
 
-    void addCartetoMain(int nombreDeCarteàAjouter, Carte[] mainJoueur, int[] deckJoueur, int nbrCartesDeckJoueur, String[] historique){
+    int addCartetoMain(int nombreDeCarteàAjouter, Carte[] mainJoueur, int[] deckJoueur, int nbrCartesDeckJoueur, String[] historique){
         for(int i=0;i<nombreDeCarteàAjouter;i++){
-            ajoutCarteDansMain(mainJoueur,deckJoueur,nbrCartesDeckJoueur,historique);
+            nbrCartesDeckJoueur = ajoutCarteDansMain(mainJoueur,deckJoueur,nbrCartesDeckJoueur,historique);
         }
+        return nbrCartesDeckJoueur;
     }
+
     // Tri le deck du joueur (carte déja utilisée placée au fond du deck ayant comme valeur 0)
     void triDeck(int[] deckJoueur){
 
@@ -333,9 +340,7 @@ class main extends Program {
             int nombreActuel = 0;
 
             for(int i=0; i<length(typeCarte); i++){
-
                 char c = charAt(typeCarte, i);
-
                 if (c == '/') {                             // Si il y a un '/', on termine le nombre actuel
                     deckJoueur[index++] = nombreActuel;
                     nombreActuel = 0;                       // Réinitialiser pour le prochain nombre
@@ -358,6 +363,7 @@ class main extends Program {
         }
         return deckJoueur;                                  // Retoure le deck du joueur (chaque numéro correspond à un id de carte)
     }
+    
     // Fonction permettant de contenir le dessin ASCII de la carte passée en paramètre
     String imageASCIICarte(CSVFile fichierCSV, int indiceCarte){
         
@@ -383,12 +389,14 @@ class main extends Program {
             println("                                                                                                   |                                                                                               ");
         }
     }
+    
     void viderMain(){
         for (int i=11;i<45;i++){
             cursor(i,101);
             println("|                                                                                               ");
         }
     }
+    
     void afficherMain(Carte[] mainJoueur){
         int cpt=0;
         if (cpt == TAILLE_MAIN) return;
@@ -409,6 +417,7 @@ class main extends Program {
         }
     }    
     // Fonction permettant d'afficher toutes les données d'une carte sous un format structuré en ASCII
+    
     void afficherDetailsCarte(Carte infosCarte, int lig, int col) {
 
         String PV_Carte = Integer.toString(infosCarte.PV); // Fonction int to String A faire
@@ -516,8 +525,15 @@ class main extends Program {
         print("---------------------------"); // Fin de l'affichage de la carte
     }
 
-     // Fonction pour afficher toutes les cartes
-     void afficherPokedex(CSVFile fichierCSV){
+    // Fonction pour afficher le contenu d'un deck
+    void afficherDeck(Joueur joueur){
+        for (int i=0; i<length(joueur.deck); i++){
+            print(joueur.deck[i] + " ");
+        }
+    }
+
+    // Fonction pour afficher toutes les cartes
+    void afficherPokedex(CSVFile fichierCSV){
         int nbLignes = rowCount(fichierCSV); // Compte le nombre de lignes dans le fichier
         for(int i=0; i<nbLignes-1; i++){
             //afficherDetailsCarte(fichierCSV, i+1); test a faire
@@ -580,6 +596,7 @@ class main extends Program {
 	        println(readLine(texte));   // Affichage du contenu de la ligne suivante
 	    }	
     }
+    
     // Fonction pour faire une animation du chargement du QCM pour Attaquer
     void chargementASCII(){
             cursor(8,37);
@@ -592,6 +609,7 @@ class main extends Program {
             print("██║");
             delay(500);
     }
+    
     // Fonction pour Transformer un ficher TXT en une String afin de pouvoir utiliser plusieur fois un même fichier
      String TXTtoString(File Fichier){
         String affichage="";
@@ -604,6 +622,7 @@ class main extends Program {
 //#region ----------------- Fonctions pour le QCM avant chaque attaque --------------------------------------------------------------------//
 /*Les quatres fonctions ci-dessous permette une selection d'une question aléatoire en fonction de la classe du joueur (ce1, ce2, cm1,cm2) et du choix de la difficulté
 et test si la réponse donné par l'utilisateur est correct ou non */
+    
     boolean réussirQCM(int entréeUtilisateur, int aleaLigne, CSVFile acharger){
         boolean réussi=false;
         String réponseUtilisateur=getCell(acharger, aleaLigne, entréeUtilisateur);
@@ -612,6 +631,7 @@ et test si la réponse donné par l'utilisateur est correct ou non */
         }
         return réussi;   
     }
+
     int choixDifficulté(){
         int choixDifficulté;
         String messageErreur="Veuillez entrez un chiffre valable";
@@ -623,6 +643,7 @@ et test si la réponse donné par l'utilisateur est correct ou non */
         }while(choixDifficulté<1 || choixDifficulté >3);
         return choixDifficulté;
     }
+    
     int controleChoixRéponses(){
         int choixQCM;
         String messageErreur="Veuillez entrez un chiffre entre 1 et 4";
@@ -635,6 +656,7 @@ et test si la réponse donné par l'utilisateur est correct ou non */
         }while(choixQCM<1 || choixQCM >4);
         return choixQCM;
     }
+    
     CSVFile aCharger(Joueur j,int choixDifficulté,CSVFile cp,CSVFile ce1,CSVFile ce2,CSVFile cm1,CSVFile cm2,CSVFile sixième){
         CSVFile aCharger;
         if(j.classe=="CE1"){
@@ -661,6 +683,7 @@ et test si la réponse donné par l'utilisateur est correct ou non */
     }    
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*Les 3 fonctions ci-dessous viennent créer les cadres de l'affichage des questions*/
+    
     void cadreAffichageQuestions(CSVFile acharger, int aleaLigne, String [] tab){
         tab[0]=getCell(acharger,aleaLigne,0);
         tab[1]=getCell(acharger,aleaLigne,1);
@@ -677,6 +700,7 @@ et test si la réponse donné par l'utilisateur est correct ou non */
         println("|     (3)"+tab[3]+"  (4)"+tab[4]);
         
     }
+    
     void cadreDifficulté(String[] tab){
         cursor(1,25);
         println("|");
@@ -704,6 +728,7 @@ et test si la réponse donné par l'utilisateur est correct ou non */
         println("|");
 
     }
+    
     void actualiserQuestions(){
         for (int i=2; i<11;i++){
             cursor(i,25);
@@ -712,6 +737,7 @@ et test si la réponse donné par l'utilisateur est correct ou non */
     }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*Cette fonction execute toute les précédentes et indique à l'algorithme principale si l'attaque est validé par le biais d'un qcm qui s'adapte à la classe du joueur*/ 
+    
     boolean QCMpourAttaquer(Joueur j,int choixDifficulté){
         boolean résultatQCM=false;
         //Liste des fichiers de questions
