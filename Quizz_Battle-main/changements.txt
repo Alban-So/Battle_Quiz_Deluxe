@@ -9,11 +9,11 @@ void partieEnCours(CSVFile fichierSauvegarde, String typeDePartie, boolean parti
 Joueur j1 = new Joueur(); 
 Joueur j2 = new Joueur();
 if (partieSauvegardee){ //Création des Joueurs avec leur classe
-    j1.pseudo = getCell(loadCSV("infosJoueursSave.csv"), 1, 0); 
-    j1.classe = getCell(loadCSV("infosJoueursSave.csv"), 1, 1); 
+    j1.pseudo = getCell(loadCSV("fichiersCSV/infosJoueursSave.csv"), 1, 0); 
+    j1.classe = getCell(loadCSV("fichiersCSV/infosJoueursSave.csv"), 1, 1); 
     viderPlateau();
-    j2.pseudo = getCell(loadCSV("infosJoueursSave.csv"), 2, 0);
-    j2.classe = getCell(loadCSV("infosJoueursSave.csv"), 2, 1); 
+    j2.pseudo = getCell(loadCSV("fichiersCSV/infosJoueursSave.csv"), 2, 0);
+    j2.classe = getCell(loadCSV("fichiersCSV/infosJoueursSave.csv"), 2, 1); 
     viderPlateau();
     cursor(9, 105);
 }
