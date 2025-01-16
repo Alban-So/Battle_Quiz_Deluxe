@@ -53,7 +53,7 @@
     }
 
 // Fonction qui sauvegarde les informations principales du jeux
-void sauvegarderInfosJoueur(Joueur joueur1, Joueur joueur2, Joueur joueurQuiJoue, int numTour){
+void sauvegarderInfosJoueur(Joueur joueur1, Joueur joueur2, Joueur joueurQuiJoue, int numTour, int joueurQuiCommence){
         
         String partieSave[][] = new String[3][7];
         String nomPartieSave = "fichiersCSV/partieSave.csv";
@@ -73,7 +73,7 @@ void sauvegarderInfosJoueur(Joueur joueur1, Joueur joueur2, Joueur joueurQuiJoue
         for(int i=1; i<3; i++){
             partieSave[i][0] = intToString(i);
             partieSave[i][4] = intToString(numTour);
-            //partieSave[i][5] = intToString(joueurQuiJoue); // A faire
+            partieSave[i][5] = intToString(joueurQuiCommence);
             if (i == 1){
                 partieSave[i][1] = intToString(joueur1.points);
                 partieSave[i][6] = intToString(joueur1.nbCarteRestanteDeck);
