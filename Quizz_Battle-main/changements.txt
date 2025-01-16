@@ -35,3 +35,6 @@ else{
     afficherPiece(joueurQuiCommence);                 // On affiche le côté de la pièce du gagnant (Face : joueur1 ; Pile : joueur2)
     delay(1500);                                      // pendant 1.5 secondes
 }
+
+// Changements dans la fonction declarationDeck
+if (c == '/' && charAt(typeCarte, i-1) != c) {// Si il y a un '/', on termine le nombre actuel
