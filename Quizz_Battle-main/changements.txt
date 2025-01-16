@@ -16,6 +16,7 @@ if (partieSauvegardee){ //Création des Joueurs avec leur classe
     j2.classe = getCell(loadCSV("fichiersCSV/infosJoueursSave.csv"), 2, 1); 
     viderPlateau();
     cursor(9, 105);
+    numTour = stringToInt(getCell(fichierSauvegarde, 1, 4));
 }
 else{
     j1=formulaireCréationJoueur(1);     //Création des Joueurs avec leur classe
