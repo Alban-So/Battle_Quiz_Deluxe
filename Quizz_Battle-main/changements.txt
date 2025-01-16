@@ -24,3 +24,14 @@ else{
     viderPlateau();
     cursor(9, 105);
 }
+
+
+// Changements dans l'initialisation du joueur Actif
+if (partieSauvegardee){
+    joueurQuiCommence = stringToInt(getCell(fichierSauvegarde, 1, 5));
+}
+else{
+    joueurQuiCommence = tirageAleatoire();            // Détermine aléatoirement qui commencera la partie
+    afficherPiece(joueurQuiCommence);                 // On affiche le côté de la pièce du gagnant (Face : joueur1 ; Pile : joueur2)
+    delay(1500);                                      // pendant 1.5 secondes
+}
