@@ -1,0 +1,26 @@
+// Dans la fonction partie en cours :
+
+// Rajout d'un boolean qui vaut true si la partie sauvegardee est selectionnee, sinon false
+// Attention, valeur a rajouter lors de l'appel de la fonction dans le void algorithm
+void partieEnCours(CSVFile fichierSauvegarde, String typeDePartie, boolean partieSauvegardee)
+
+
+// Changements dans l'initialisation d'un joueur
+Joueur j1 = new Joueur(); 
+Joueur j2 = new Joueur();
+if (partieSauvegardee){ //Création des Joueurs avec leur classe
+    j1.pseudo = getCell(loadCSV("infosJoueursSave.csv"), 1, 0); 
+    j1.classe = getCell(loadCSV("infosJoueursSave.csv"), 1, 1); 
+    viderPlateau();
+    j2.pseudo = getCell(loadCSV("infosJoueursSave.csv"), 2, 0);
+    j2.classe = getCell(loadCSV("infosJoueursSave.csv"), 2, 1); 
+    viderPlateau();
+    cursor(9, 105);
+}
+else{
+    j1=formulaireCréationJoueur(1);     //Création des Joueurs avec leur classe
+    viderPlateau();
+    j2=formulaireCréationJoueur(2);
+    viderPlateau();
+    cursor(9, 105);
+}
