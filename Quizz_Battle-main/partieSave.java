@@ -12,7 +12,7 @@
     void sauvegarderPlateau(Carte[][] plateau){
 
         String plateauSave[][] = new String[7][2];
-        String nomPlateauSave = "fichiersCSV/plateauSaveTest.csv";
+        String nomPlateauSave = "fichiersCSV/plateauSave.csv";
 
         plateauSave[0][0] = "idCarte";
         plateauSave[0][1] = "PV";
@@ -40,7 +40,7 @@
     void sauvegarderInfosJoueurs(Joueur joueur1, Joueur joueur2){
 
         String infosJoueursSave[][] = new String[3][2];
-        String nomInfosJoueursSave = "fichiersCSV/infosJoueursSaveTest.csv";
+        String nomInfosJoueursSave = "fichiersCSV/infosJoueursSave.csv";
 
         infosJoueursSave[0][0] = "pseudo";
         infosJoueursSave[0][1] = "classe";
@@ -56,7 +56,7 @@
 void sauvegarderInfosJoueur(Joueur joueur1, Joueur joueur2, Joueur joueurQuiJoue, int numTour){
         
         String partieSave[][] = new String[3][7];
-        String nomPartieSave = "fichiersCSV/partieSaveTest.csv";
+        String nomPartieSave = "fichiersCSV/partieSave.csv";
 
         partieSave[0][0] = "numJoueur";
         partieSave[0][1] = "pointsJoueur";
