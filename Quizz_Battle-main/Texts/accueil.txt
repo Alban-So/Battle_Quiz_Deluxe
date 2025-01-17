@@ -1,0 +1,8 @@
+|                1 - Nouvelle partie en 1vsBOT                                                      |
+|                2 - Nouvelle partie en 1vs1                                                        |
+|                3 - Charger une partie pré-existante                                               |
+|                4 - Afficher les règles du jeux                                                    |
+|                5 - Voir les decks disponibles                                                     |
+|                6 - Crédits du jeu                                                                 |
+|                7 - Quitter le jeu                                                                 |
+|---------------------------------------------------------------------------------------------------|
