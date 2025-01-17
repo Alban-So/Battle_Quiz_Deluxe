@@ -1,3 +1,6 @@
+import Carte;
+import Joueur;
+package Texts;
 import extensions.CSVFile;
 import extensions.File;
 
@@ -103,14 +106,14 @@ class main extends Program {
     }
     
     // Fonction qui gère la partie
-    void partieEnCours(CSVFile fichierSauvegarde, String typeDePartie){
+    void partieEnCours(CSVFile fichierSauvegarde, String typeDePartie, boolean partieSauvegardee){
         //---------------------------INITIALISATION COMMUNE AUX 2 TYPES DE PARTIES--------------------------------------------------------//
         //#region Déclaration des variables nécessaires pour le bon fonctionnement du jeux
-        int numTour = (int) charAt(getCell(fichierSauvegarde, 1, 6), 0)-48; // Cherche le nombre de tours actuel
+        int numTour = 0;
         int joueurQuiCommence = -1;
         String pseudoJoueur;
         String[] historiqueJeux = {"", "", "", ""};// Stocke l'historique du jeux  
-        Carte[][] plateauDeCartes=new Carte[2][3]; // permet de stocker les cartes choisies de la main dans le plateau
+        Carte[][] plateauDeCartes = new Carte[2][3]; // permet de stocker les cartes choisies de la main dans le plateau
         boolean finDePartie=false;
         boolean tourFini=false;
         boolean reussiCartePose;
@@ -132,15 +135,32 @@ class main extends Program {
         //---------------------------------------PARTIE JOUEUR CONTRE JOUEUR--------------------------------------------//
         if(equals(typeDePartie,"1vs1")){                    
             //-----------------------------------------MISE EN PLACE DE LA PARTIE---------------------------------------//
-            Joueur j1=formulaireCréationJoueur(1);          //Création des Joueurs avec leur classe
-            viderPlateau();
-            Joueur j2=formulaireCréationJoueur(2);
-            viderPlateau();
-            cursor(9, 105);
+            Joueur j1 = new Joueur(); 
+            Joueur j2 = new Joueur();
+            if (partieSauvegardee){ //Création des Joueurs avec leur classe
+                j1.pseudo = getCell(loadCSV("fichiersCSV/infosJoueursSave.csv"), 1, 0); 
+                j1.classe = getCell(loadCSV("fichiersCSV/infosJoueursSave.csv"), 1, 1); 
+                viderPlateau();
+                j2.pseudo = getCell(loadCSV("fichiersCSV/infosJoueursSave.csv"), 2, 0);
+                j2.classe = getCell(loadCSV("fichiersCSV/infosJoueursSave.csv"), 2, 1); 
+                viderPlateau();
+                cursor(9, 105);
+                numTour = stringToInt(getCell(fichierSauvegarde, 1, 4));
+            }
+            else{
+                j1=formulaireCréationJoueur(1);     //Création des Joueurs avec leur classe
+                viderPlateau();
+                j2=formulaireCréationJoueur(2);
+                viderPlateau();
+                cursor(9, 105);
+            }
             print("Tour n°" + numTour);
-            joueurQuiCommence = tirageAleatoire();            // Détermine aléatoirement qui commencera la partie
-            afficherPiece(joueurQuiCommence);                 // On affiche le côté de la pièce du gagnant (Face : joueur1 ; Pile : joueur2)
-            delay(1500);                                      // pendant 1.5 secondes
+            if (partieSauvegardee) joueurQuiCommence = stringToInt(getCell(fichierSauvegarde, 1, 5));
+            else{
+                joueurQuiCommence = tirageAleatoire();            // Détermine aléatoirement qui commencera la partie
+                afficherPiece(joueurQuiCommence);                 // On affiche le côté de la pièce du gagnant (Face : joueur1 ; Pile : joueur2)
+                delay(1500);                                      // pendant 1.5 secondes
+            }
             if(joueurQuiCommence==1){
                 pseudoJoueur=j1.pseudo;
             }else{
@@ -149,13 +169,28 @@ class main extends Program {
             viderPlateau();
             cursor(10, 1);
             print(stylePlateau);
-            afficherHistoriquePartie(historiqueJeux, "C'est le joueur " + pseudoJoueur + " qui commence !"); // Met à jour l'historique de la partie
-            afficherHistoriquePartie(historiqueJeux, "Chaque joueur dispose d'un deck sélectionné aléatoirement.");
-            afficherHistoriquePartie(historiqueJeux, "Chaque joueur pioche 3 cartes.");
             j1.deck = declarationDeck(fichierSauvegarde, 1); // Initialisation du deck du joueur 1
             j2.deck = declarationDeck(fichierSauvegarde, 2); // Initialisation du deck du joueur 2
-            j1.nbCarteRestanteDeck = addCartetoMain(3,j1.main, j1.deck, j1.nbCarteRestanteDeck, historiqueJeux);  // Ajout de 3 cartes aléatoire dans la main de chaque joueur
-            j2.nbCarteRestanteDeck = addCartetoMain(3,j2.main, j2.deck, j2.nbCarteRestanteDeck, historiqueJeux);
+            if (numTour == 0){
+                afficherHistoriquePartie(historiqueJeux, "C'est le joueur " + pseudoJoueur + " qui commence !"); // Met à jour l'historique de la partie
+                afficherHistoriquePartie(historiqueJeux, "Chaque joueur dispose d'un deck sélectionné aléatoirement.");
+                afficherHistoriquePartie(historiqueJeux, "Chaque joueur pioche 3 cartes.");
+                j1.nbCarteRestanteDeck = addCartetoMain(3,j1.main, j1.deck, j1.nbCarteRestanteDeck, historiqueJeux);  // Ajout de 3 cartes aléatoire dans la main de chaque joueur
+                j2.nbCarteRestanteDeck = addCartetoMain(3,j2.main, j2.deck, j2.nbCarteRestanteDeck, historiqueJeux);
+                j1.points = 0; // Initialisation des points des joueurs
+                j2.points = 0;
+            }
+            else{
+                if (!equals(getCell(fichierSauvegarde, 1, 1), "")) j1.points = stringToInt(getCell(fichierSauvegarde, 1, 1)); // Initialisation des points des joueurs
+                if (!equals(getCell(fichierSauvegarde, 2, 1), "")) j2.points = stringToInt(getCell(fichierSauvegarde, 2, 1));
+                j1.nbCarteRestanteDeck = stringToInt(getCell(fichierSauvegarde, 1, 6)); // Initialisation du nombre de cartes restantes dans le deck
+                j2.nbCarteRestanteDeck = stringToInt(getCell(fichierSauvegarde, 2, 6));
+                j1.main = new Carte[TAILLE_MAIN];
+                j2.main = new Carte[TAILLE_MAIN];
+                ajoutCarteSauvegardeeDansMain(j1, 1,  fichierSauvegarde);     // Initialisation de la main des joueurs
+                ajoutCarteSauvegardeeDansMain(j2, 2, fichierSauvegarde);
+                ajoutCarteSauvegardeeDansPlateau(plateauDeCartes); // Initialisation du plateau de cartes
+            }
 
             while(!finDePartie){// Lancement du gameplay, tourne tant que finDePartie est sur false.
                 tourFini=false; // rénitialisation de la variable pour continuer switch en les joueurs.
@@ -169,22 +204,32 @@ class main extends Program {
                         joueurQuiJoue.indiceLignePlateauDeCarte=1;
                         joueurQuiJoue.coordonneesAffichageCartes=indiceCarteJ2;
                     }
-                    cursor(2,0);
-                    print(menuMainJoueur); 
-                    afficherMain(joueurQuiJoue.main);// Affichage de la main du joueur qui joue
-                    afficherHistoriquePartie(historiqueJeux, "C'est à " + joueurQuiJoue.pseudo + " de placer ses cartes.");
                     if(numTour==0 || numTour==1){
-                        afficherHistoriquePartie(historiqueJeux,"Placez une carte sur le poste actif");
+                        cursor(2,0);
+                        print(menuMainJoueur); 
+                        afficherMain(joueurQuiJoue.main);// Affichage de la main du joueur qui joue
+                        afficherHistoriquePartie(historiqueJeux, "C'est à " + joueurQuiJoue.pseudo + " de placer ses cartes.");
+                        afficherHistoriquePartie(historiqueJeux,"Placez une carte sur le poste actif.");
                         placerCarteFinal(plateauDeCartes,joueurQuiJoue,0,historiqueJeux);
-                        afficherHistoriquePartie(historiqueJeux,"Placez au choix uneou deux cartes sur le banc");
+                        afficherHistoriquePartie(historiqueJeux,"Placez si vous le souhaitez une ou plusieurs cartes sur le banc.");
                         placerCarteFinal(plateauDeCartes,joueurQuiJoue,1,historiqueJeux);
                         placerCarteFinal(plateauDeCartes,joueurQuiJoue,2,historiqueJeux);
                         
                     }else{
-                        //afficher le plateau normal
+                        if (joueurQuiCommence == 1 && !partieSauvegardee) j1.nbCarteRestanteDeck = addCartetoMain(1,j1.main, j1.deck, j1.nbCarteRestanteDeck, historiqueJeux);
+                        else if(!partieSauvegardee) j2.nbCarteRestanteDeck = addCartetoMain(1,j2.main, j2.deck, j2.nbCarteRestanteDeck, historiqueJeux);
+                        afficherHistoriquePartie(historiqueJeux, joueurQuiJoue.pseudo + " pioche une carte.");
+                        cursor(2,0);
+                        print(menuMainJoueur);
+                        afficherMain(joueurQuiJoue.main);
+                        int test = readInt(); // Test de la fonction de sauvegarde
+                        if (test == 1){
+                            sauvegarderInfosJoueur(j1, j2, joueurQuiJoue, numTour, joueurQuiCommence);
+                            sauvegarderPlateau(plateauDeCartes);
+                            sauvegarderInfosJoueurs(j1, j2);
+                        }
                         // inclure les choix possibles ( voir encadréQuestion.txt)
                         // bouton attaque ou retraite préssé -> QCMpourAttaquer() --> décomenter ce qui suit :
-                        delay(2000);
                         //chargementASCII();
                         //actualiserQuestions();
                         //cadreDifficulté(placementQuestion);
@@ -193,21 +238,131 @@ class main extends Program {
                         //actualiserQuestions();
                         //cursor(2,0);
                         //println(logoQCMString);
+                        partieSauvegardee = false;
+                        delay(1000); // test , delai temporaire
                     }
                 numTour++;
                 joueurQuiCommence=(joueurQuiCommence+1)%2;
                 tourFini=true;    
-                }   
+                }
             }
         
         //----------------------------------PARTIE BOT CONTRE JOUEUR--------------------------------------//
         }else{
             cursor(28,31);
-            println("pas encore fait...1 jour peut-etre");
-            delay(5000);   
+            println("Disponible dans la prochaine mise à jour.");
+            delay(4000);   
         }
     }
 
+    void sauvegarderInfosJoueur(Joueur joueur1, Joueur joueur2, Joueur joueurQuiJoue, int numTour, int joueurQuiCommence){
+        
+        String partieSave[][] = new String[3][7];
+        String nomPartieSave = "fichiersCSV/partieSave.csv";
+
+        partieSave[0][0] = "numJoueur";
+        partieSave[0][1] = "pointsJoueur";
+        partieSave[0][2] = "cartesDeck";
+        partieSave[0][3] = "cartesMain";
+        partieSave[0][4] = "numTour";
+        partieSave[0][5] = "joueurActif";
+        partieSave[0][6] = "nbrCartesDeck";
+        partieSave[1][2] = "";
+        partieSave[2][2] = "";
+        partieSave[1][3] = "";
+        partieSave[2][3] = "";
+
+        for(int i=1; i<3; i++){
+            partieSave[i][0] = intToString(i);
+            partieSave[i][4] = intToString(numTour);
+            partieSave[i][5] = intToString(joueurQuiCommence); 
+            if (i == 1){
+                partieSave[i][1] = intToString(joueur1.points);
+                partieSave[i][6] = intToString(joueur1.nbCarteRestanteDeck);
+            }
+            else{
+                partieSave[i][1] = intToString(joueur2.points);
+                partieSave[i][6] = intToString(joueur2.nbCarteRestanteDeck);
+            }
+        }
+
+        for (int i=0; i<TAILLE_DECK; i++){
+            partieSave[1][2] += intToString(joueur1.deck[i]);
+            partieSave[2][2] += intToString(joueur2.deck[i]);
+            if (i<TAILLE_DECK-1) {
+                partieSave[1][2] += "/";
+                partieSave[2][2] += "/";
+            }
+        }
+
+        for(int i=0; i<length(joueur1.main); i++){
+            
+            if (joueur1.main[i] != null) partieSave[1][3] += intToString(joueur1.main[i].idCarte);
+            if (joueur2.main[i] != null) partieSave[2][3] += intToString(joueur2.main[i].idCarte);
+            if (i<length(joueur1.main)-1) {
+                partieSave[1][3] += "/";
+                partieSave[2][3] += "/";
+            }
+        }
+
+        saveCSV(partieSave, nomPartieSave);
+    }
+
+    // Sauvegarde les informations du plateau
+    void sauvegarderPlateau(Carte[][] plateau){
+
+        String plateauSave[][] = new String[7][2];
+        String nomPlateauSave = "fichiersCSV/plateauSave.csv";
+
+        plateauSave[0][0] = "idCarte";
+        plateauSave[0][1] = "PV";
+
+        int compteur = 1;
+
+       for (int i=0; i<2; i++){ // boucle que enregistre dans le CSV les cartes du plateau avec leur id et leur PV
+        // plateau est de taille 2x3 et je veux stocker les informations des 6 cartes dans un csv de taille 2x6
+            for (int j=0; j<3; j++) {
+                if (plateau[i][j] != null) {
+                    plateauSave[compteur][0] = intToString(plateau[i][j].idCarte);
+                    plateauSave[compteur][1] = intToString(plateau[i][j].PV);
+                } else {
+                    plateauSave[compteur][0] = "0";
+                    plateauSave[compteur][1] = "0";
+                }
+                compteur++;
+            }
+       }
+
+       saveCSV(plateauSave, nomPlateauSave);
+
+    }
+
+    // Sauvegarde les informations des joueurs
+    void sauvegarderInfosJoueurs(Joueur joueur1, Joueur joueur2){
+
+        String infosJoueursSave[][] = new String[3][2];
+        String nomInfosJoueursSave = "fichiersCSV/infosJoueursSave.csv";
+
+        infosJoueursSave[0][0] = "pseudo";
+        infosJoueursSave[0][1] = "classe";
+        infosJoueursSave[1][0] = joueur1.pseudo;
+        infosJoueursSave[1][1] = joueur1.classe;
+        infosJoueursSave[2][0] = joueur2.pseudo;
+        infosJoueursSave[2][1] = joueur2.classe;
+
+        saveCSV(infosJoueursSave, nomInfosJoueursSave);
+    }
+
+    // Fonction qui convertit un entier int en String
+    String intToString(int nombre){
+        String nombreString = "";
+        while(nombre != 0){
+            nombreString = (char) (nombre%10 + '0') + nombreString;
+            nombre = nombre/10;
+        }
+        return nombreString;
+    }
+    
     int compteurCarteMain(Carte[]main){
         int cpt=0;
         for(int i=0;i<TAILLE_MAIN;i++){
@@ -235,13 +390,13 @@ class main extends Program {
     
     void placerCarteFinal(Carte[][] plateauDeCartes,Joueur joueurQuiJoue,int posteCarte,String[] historiqueJeux){
         int carteChoisi;
-        boolean estPlace;
+        boolean estPlace = false;
         do{
             carteChoisi=choixJoueur(compteurCarteMain(joueurQuiJoue.main));
-            if(carteChoisi==7){
+            if(carteChoisi==7 && plateauDeCartes[joueurQuiJoue.indiceLignePlateauDeCarte][0] != null){
                 return;
             }
-            estPlace=placerCarte(plateauDeCartes,joueurQuiJoue,carteChoisi,posteCarte,historiqueJeux);
+            else if (carteChoisi!=7) estPlace=placerCarte(plateauDeCartes,joueurQuiJoue,carteChoisi,posteCarte,historiqueJeux);
         }while(!estPlace);
     }
 
@@ -287,6 +442,55 @@ class main extends Program {
         } // Sinon, on indique qu'il n'y a pas de place dans sa main.
         else afficherHistoriquePartie(historique, "Vous avez atteint le nombre de cartes maximale dans votre main.");
         return nbrCartesDeckJoueur;
+    }
+
+    // Définit la carte de la main à parti du fichier de sauvegarde
+    void ajoutCarteSauvegardeeDansMain(Joueur joueur, int numJoueur, CSVFile partieSave){
+
+        String typeCarte = getCell(partieSave, numJoueur, 3);
+        int index = 0;
+        int nombreActuel = 0;
+
+        for(int i=0; i<length(typeCarte); i++){
+            char c = charAt(typeCarte, i);
+            if (c == '/' && charAt(typeCarte, i-1) != c) {
+                joueur.main[index++] = definitCarte(nombreActuel);
+                nombreActuel = 0;
+            } else {
+                nombreActuel = nombreActuel * 10 + (c - '0');
+            }
+        }
+    }
+
+    // Définit les cartes du plateau à partir du fichier de sauvegarde
+    void ajoutCarteSauvegardeeDansPlateau(Carte[][] plateau){
+
+        CSVFile partieSave = loadCSV("fichiersCSV/plateauSave.csv");
+
+        int joueur = 1;
+        int indiceCarte = 0;
+        int lig = 13;
+        int col = 38;
+
+        for (int i=1; i<7; i++){
+            if(!equals(getCell(partieSave, i, 0), "0")){
+                if (i == 2 || i == 3) lig = 11;
+                if (i == 5 || i == 6) lig = 31;
+                if (i == 2 || i == 5) col = 5;
+                if (i == 3 || i == 6) col = 70;
+                int idCarte = stringToInt(getCell(partieSave, i, 0));
+                plateau[joueur-1][indiceCarte] = definitCarte(idCarte);
+                plateau[joueur-1][indiceCarte].PV = stringToInt(getCell(partieSave, i, 1));
+                afficherDetailsCarte(plateau[joueur-1][indiceCarte],lig,col);
+            }
+            if (i == 3){
+                joueur = 2;
+                indiceCarte = 0;
+                lig = 28;
+                col = 38;
+            }
+            else indiceCarte++;
+        }
     }
 
     int addCartetoMain(int nombreDeCarteàAjouter, Carte[] mainJoueur, int[] deckJoueur, int nbrCartesDeckJoueur, String[] historique){
@@ -341,7 +545,7 @@ class main extends Program {
 
             for(int i=0; i<length(typeCarte); i++){
                 char c = charAt(typeCarte, i);
-                if (c == '/') {                             // Si il y a un '/', on termine le nombre actuel
+                if (c == '/' && charAt(typeCarte, i-1) != c) {// Si il y a un '/', on termine le nombre actuel
                     deckJoueur[index++] = nombreActuel;
                     nombreActuel = 0;                       // Réinitialiser pour le prochain nombre
                 } else {
@@ -530,6 +734,7 @@ class main extends Program {
         for (int i=0; i<length(joueur.deck); i++){
             print(joueur.deck[i] + " ");
         }
+        delay(1000);
     }
 
     // Fonction pour afficher toutes les cartes
@@ -785,13 +990,18 @@ et test si la réponse donné par l'utilisateur est correct ou non */
                 case "1": // Choix d'une partie solo contre bot
                     partieSélectionnée = loadCSV("fichiersCSV/partieVide.csv");
                     typeDePartie="1vsBOT";
-                    partieEnCours(partieSélectionnée,"1vsBOT");// On lance la partie
+                    partieEnCours(partieSélectionnée,"1vsBOT", false);// On lance la partie
                     break;
 
                 case "2": // Choix d'une partie 1v1 
                     partieSélectionnée = loadCSV("fichiersCSV/partieVide.csv");
                     typeDePartie="1vs1";
-                    partieEnCours(partieSélectionnée,"1vs1");// On lance la partie;
+                    partieEnCours(partieSélectionnée,"1vs1", false);// On lance la partie;
+                    break;
+                case "3": // Choix d'une partie deja sauvegardee
+                    partieSélectionnée = loadCSV("fichiersCSV/partieSave.csv");
+                    typeDePartie="1vs1";
+                    partieEnCours(partieSélectionnée,"1vs1", true);// On lance la partie;
                     break;
 
                 case "8": // Choix de fin du jeu
