@@ -1319,9 +1319,11 @@ et test si la réponse donné par l'utilisateur est correct ou non */
                 }
             }
             if (partieSauvegardee) joueurQuiCommence = stringToInt(getCell(fichierSauvegarde, 1, 5));
-            else joueurQuiCommence =1+(int) (random()*((2-1)+1));  // Détermine aléatoirement qui commencera la partie en retournant soit 1 soit 2
-            afficherPiece(joueurQuiCommence);                 // On affiche le côté de la pièce du gagnant (Face : joueur1 ; Pile : joueur2)
-            delay(1500);                                      // pendant 1.5 secondes
+            else {
+                joueurQuiCommence =1+(int) (random()*((2-1)+1));  // Détermine aléatoirement qui commencera la partie en retournant soit 1 soit 2
+                afficherPiece(joueurQuiCommence);                 // On affiche le côté de la pièce du gagnant (Face : joueur1 ; Pile : joueur2)
+                delay(1500);                                      // pendant 1.5 secondes
+            }
             if(joueurQuiCommence==1){
                 pseudoJoueur=j1.pseudo;
             }else{
@@ -1434,6 +1436,7 @@ et test si la réponse donné par l'utilisateur est correct ou non */
                 }   
             }
     }
+    
     void algorithm() {
         //CSVFile fichierCSV = loadCSV("fichiersCSV/cartes.csv"); // Charger le fichier CSV contenant les informations des cartes
         //int nbLignes = rowCount(fichierCSV); // Compte le nombre de lignes dans le fichier
@@ -1486,7 +1489,40 @@ et test si la réponse donné par l'utilisateur est correct ou non */
         
         println("\n| Merci d'avoir joué !");
     }
+
+    // ------------------------- Fonctions de test ------------------------- //
     
+    // Fonction de test pour la declaration de deck
+    void testdeclarationDeck(){
+        CSVFile CSV= loadCSV("fichiersCSV/partieSave.csv");
+        int[] deck = new int[TAILLE_DECK];
+        deck = declarationDeck(CSV, 1);
+        assertEquals(length(deck), TAILLE_DECK);
+        assertEquals(deck[0], 1);
+        assertEquals(deck[1], 2);
+    }
+
+    // Fonction pour verifier si le deck est bien initialisé
+    void testDeckInitialise(){
+        int newDeck[] = new int[TAILLE_DECK];
+        assertEquals(length(newDeck), TAILLE_DECK);
+    }
+
+    // Fonction pour vérifier si les joueurs sont bien initialisés
+    void testJoueursInitialises(){
+        Joueur joueurTest = new Joueur();
+        joueurTest = newJoueur("Toto", "CP");
+        assertEquals(joueurTest.pseudo, "Toto");
+        assertEquals(joueurTest.classe, "CP");
+    }
+
+    // Fonction pour vérifier si le plateau est bien initialisé
+    void testPlateauInitialise(){
+        Carte plateauTest[][] = new Carte[2][3];
+        assertEquals(length(plateauTest), 2);
+        assertEquals(length(plateauTest[0]), 3);
+        assertEquals(length(plateauTest[1]), 3);
+    }
     
 //#endregion
 }
