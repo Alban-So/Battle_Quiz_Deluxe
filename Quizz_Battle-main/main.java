@@ -830,7 +830,7 @@ et test si la réponse donné par l'utilisateur est correct ou non */
     String nomPartieSave = "fichiersCSV/partieSave.csv";
 
     String joueurActif = intToString(joueurQuiCommence);
-    if (joueurActif == "0") joueurActif = "2";
+    if (joueurActif == "") joueurActif = "2";
 
     partieSave[0][0] = "numJoueur";
     partieSave[0][1] = "pointsJoueur";
