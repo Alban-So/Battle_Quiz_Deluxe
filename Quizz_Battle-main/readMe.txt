@@ -9,7 +9,7 @@ Contacts : <mail1> , alban.sonneville@gmail.com
 
 
 
-# Utilisation de <le nom de votre jeu>
+# Utilisation de Battle Quiz Deluxe
 
 Afin d'utiliser le projet, il suffit de taper les commandes suivantes dans un terminal :
 
