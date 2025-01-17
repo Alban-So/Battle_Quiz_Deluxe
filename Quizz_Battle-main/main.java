@@ -934,11 +934,16 @@ et test si la réponse donné par l'utilisateur est correct ou non */
 
         for(int i=0; i<length(typeCarte); i++){
             char c = charAt(typeCarte, i);
-            if (c == '/' && charAt(typeCarte, i-1) != c) {
-                joueur.main[index++] = definitCarte(nombreActuel);
-                nombreActuel = 0;
-            } else {
-                nombreActuel = nombreActuel * 10 + (c - '0');
+            if (i > 0){
+                if (c == '/' && charAt(typeCarte, i-1) != c) {
+                    joueur.main[index++] = definitCarte(nombreActuel);
+                    nombreActuel = 0;
+                } else {
+                    nombreActuel = nombreActuel * 10 + (c - '0');
+                }
+            }
+            else{
+                if (c != '/') nombreActuel = nombreActuel * 10 + (c - '0');
             }
         }
     }
