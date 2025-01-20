@@ -1,10 +1,10 @@
 <BATTLE QUIZ DELUXE>
 ===========
 
-Développé par <Alban> <Clément Roty>
+Développé par <Alban Sonneville> et <Clément Roty>
 Contacts : <alban.sonneville.etu@univ-lille.fr> , <clement.roty.etu@univ-lille.fr>
 
-# Présentation de <le nom de votre jeu>
+# Présentation de Battle Quiz Deluxe
 
 <Description de votre jeu>
 Battle Quizz Deluxe, est un jeu de carte sur plateau se jouant au tour par tour. Vous disposez de carte de différent type (monstre,dresseur,objet), dans votre main que vous pouvez
