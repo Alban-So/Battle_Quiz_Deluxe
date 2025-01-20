@@ -1,7 +1,7 @@
 <BATTLE QUIZ DELUXE>
 ===========
 
-Développé par <Alban Sonneville> <Clément Roty>
+Développé par <Alban> <Clément Roty>
 Contacts : <alban.sonneville.etu@univ-lille.fr> , <clement.roty.etu@univ-lille.fr>
 
 # Présentation de <le nom de votre jeu>
