@@ -2,7 +2,7 @@
 ===========
 
 Développé par Alban Sonneville et Clément Roty
-Contacts : <alban.sonneville.etu@univ-lille.fr> , <clement.roty.etu@univ-lille.fr>
+\nContacts : <alban.sonneville.etu@univ-lille.fr> , <clement.roty.etu@univ-lille.fr>
 
 # Présentation de Battle Quiz Deluxe
 
