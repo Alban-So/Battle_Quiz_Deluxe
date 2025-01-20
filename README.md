@@ -13,7 +13,7 @@ La partie pédagogique intervient dans le système d'attaque et de retraite des 
 Des captures d'écran illustrant le fonctionnement du logiciel sont proposées dans le répertoire shots.
 
 
-# Utilisation de <Battle Quizz Deluxe>
+# Utilisation de Battle Quizz Deluxe
 
 /!\ ATTENTION: pour un affichage correct du jeu, vous devez le lancer en pleine écran. Si jamais l'affichage n'est pas correct, essayez d'agrandir ou de reduire le zoom du terminal.
 
